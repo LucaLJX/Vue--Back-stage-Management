@@ -1,0 +1,245 @@
+.clean {
+  clear: both;
+}
+
+.font-bord {
+  font-weight: bold;
+}
+
+/* common-xxx */
+
+.common-right {
+  float: right;
+}
+
+.common-left {
+  float: left;
+}
+
+.common-top-container {
+  height: 40px;
+  border-bottom: 1px solid #ddd;
+  margin-left: 20px;
+  margin-right: 20px;
+  line-height: 40px;
+  font-size: 14px;
+}
+.common-top-action-container {
+  height: 40px;
+  line-height: 40px;
+  font-size: 14px;
+}
+
+.common-top-ver-line {
+  border-right: 2px solid;
+  width: 1px;
+  height: 13px;
+  float: left;
+  margin-right: 10px;
+  margin-top: 13px;
+  color: #3399ff;
+}
+
+.common-top-title-left {
+  display: block;
+  float: left;
+  margin-right: 10px;
+  color: #3399ff;
+}
+
+.common-top-title-right {
+  display: block;
+  float: right;
+  color: #3399ff;
+}
+
+.common-top-icon {
+  margin-right: 10px;
+  color: #3399ff;
+  float: left;
+  line-height: 40px;
+}
+
+.common-top-right {
+  float: right;
+  line-height: 40px;
+}
+
+.common-right-btn {
+  margin-left: 8px;
+}
+
+.common-left-btn {
+  margin-right: 8px;
+}
+
+.common-long-size {
+  width: 300px;
+}
+
+.common-default-size {
+  width: 200px;
+}
+
+.common-short-size {
+  width: 120px;
+}
+
+.common-top-margin-20 {
+  margin-top: 20px;
+}
+
+.common-left-margin-8 {
+  margin-left: 8px;
+}
+
+.z-table-controller-checkbox {
+  padding: 0 0 0 19px;
+}
+.ivu-table-cell{
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.ivu-table-cell .ivu-btn.ivu-btn-small {
+  margin: 2px 0;
+}
+
+.common-right-container {
+  margin: 14px 20px 0 20px;
+}
+
+.history-back-container{
+  text-align: right;
+}
+
+.z-form .z-form-controller {
+  width: 84%;
+}
+
+.z-form-static {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+.z-form-static .z-form-item{
+  vertical-align: top;
+  zoom: 1;
+}
+.z-form-static .z-form-item label{
+  width: 120px;
+  text-align: right;
+  vertical-align: middle;
+  float: left;
+  font-size: 12px;
+  color: #657180;
+  line-height: 1;
+  padding: 10px 12px 10px 0;
+  box-sizing: border-box;
+}
+.z-form-static .z-form-item div{
+  margin-left: 120px;
+  position: relative;
+  line-height: 32px;
+  font-size: 12px;
+}
+
+/* tb-xxx */
+
+.tb-container {
+  margin-top: 16px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 56px;
+
+}
+
+.z-table-container {
+  margin-top: 16px;
+}
+
+.z-flip-container {
+  border: 1px solid #ddd;
+  border-top: none;
+  height: 40px;
+  line-height: 40px;
+}
+
+.z-flip-container .z-flip-page {
+  float: right;
+  line-height: 26px;
+  margin-top: 8px;
+}
+
+.z-flip-container .z-flip-text {
+  height: 40px;
+  margin-right: 16px;
+  float: right;
+  display: block;
+}
+
+.z-card {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+/* cr-xxx */
+
+.cr-left-container {
+  position: absolute;
+  width: 218px;
+  height: 82%;
+  border: 1px solid #ddd;
+}
+
+.cr-left-title {
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  font-weight: bold;
+}
+.cr-left-tree{
+  padding: 4px 6px;
+}
+.cr-right-container {
+  width: 100%;
+  padding-left: 238px;
+  margin-bottom: 54px;
+}
+
+.cr-right-top {
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid #ddd;
+}
+
+.cr-right-top-left {
+  float: left;
+  height: 40px;
+  line-height: 40px;
+}
+
+.cr-right-top-right {
+  float: right;
+  height: 40px;
+  line-height: 18px;
+  padding-top: 8px;
+}
+
+.cr-right-middle {
+  margin-top: 14px;
+  height: 24px;
+}
+
+.cr-import-steps-container {
+  height: 80px;
+  line-height: 80px;
+  padding-left: 15%;
+  padding-top: 25px;
+}
+
+.cr-import-steps {
+  float: left;
+}

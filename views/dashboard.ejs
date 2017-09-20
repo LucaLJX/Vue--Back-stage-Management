@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="stylesheet" href="/css/iviewCustom.css">
+<!--<link rel="stylesheet" href="/css/customTheme.css">-->
+
+<div id="app">
+  <router-view></router-view>
+</div>
+<script>
+  const CURRENT_LEADER = {
+    name: '<%= req.session.leader.name %>',
+    num: '<%= req.session.leader.num %>',
+    companyId: '<%= req.session.leader.companyId %>'
+  }
+</script>
+<script src="/js/dashboard/index.js"></script>

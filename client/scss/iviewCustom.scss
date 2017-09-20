@@ -1,0 +1,19 @@
+// 对 iView tree 组件进行样式定制
+.ivu-tree ul li {
+  margin: 2px 0;
+}
+.ivu-tree-title {
+  padding: 2px 8px 2px 2px;
+}
+.ivu-tree-title:hover {
+  background-color: #a8d1f9;
+}
+.ivu-tree-title.ivu-tree-title-selected{
+  background-color: #39f;
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 8px 2px 2px;
+}
+.ivu-tree-arrow {
+  font-size: 16px;
+}

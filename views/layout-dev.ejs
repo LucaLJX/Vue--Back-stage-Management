@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  	<meta charset="UTF-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<title>
+    	<%=typeof title == 'undefined' ? '管理控制台' : title%>
+  	</title>
+  	<!--<link rel="stylesheet" type="text/css" href="/libs/iview/iview.css">-->
+  	<!-- <link rel="stylesheet" type="text/css" href="//unpkg.com/iview/dist/styles/iview.css"> -->
+		<link rel="stylesheet" type="text/css" href="/libs/iview/iview.css">
+
+		<!--  视频插件css  -->
+		<link rel="stylesheet" href="/libs/plyr/plyr.css">
+		<!-- 截图插件 -->
+		<link rel="stylesheet" href="/libs/cropper/cropper.css">
+
+
+
+		<script type="text/javascript" src="/libs/jquery/jquery.min.js"></script>
+  	<script type="text/javascript" src="/libs/vue/vue.js"></script>
+  	<script type="text/javascript" src="/libs/vue/vue-router.js"></script>
+  	<script type="text/javascript" src="/libs/iview/iview.js"></script>
+  	<!-- <script type="text/javascript" src="//unpkg.com/iview/dist/iview.js"></script> -->
+		<!--<script type="text/javascript" src="/libs/iview/iview.min.js"></script>-->
+  	<script type="text/javascript" src="/libs/vue/vue-resource.js"></script>
+		<!--<script type="text/javascript" src="/libs/zepto.min.js"></script>-->
+		
+		<!-- 视频插件js -->
+		<script src="/libs/plyr/plyr.js"></script>
+		<!-- 截图插件js -->
+		<script src="/libs/cropper/cropper.js"></script>
+
+
+
+
+
+</head>
+
+<body>
+  	<%- body %>
+</body>
+
+</html>

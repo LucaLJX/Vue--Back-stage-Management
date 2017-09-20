@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%=typeof title == 'undefined' ? 'ACE管理控制台' : title%></title>
+
+  <link rel="stylesheet" type="text/css" href="/libs/iview/iview.css">
+  <!--  视频插件css  -->
+  <link rel="stylesheet" href="/libs/plyr/plyr.css">
+  <!-- 截图插件css -->
+  <link rel="stylesheet" href="/libs/cropper/cropper.css">
+
+  <script type="text/javascript" src="/libs/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/libs/vue/vue.min.js"></script>
+  <script type="text/javascript" src="/libs/vue/vue-router.min.js"></script>
+  <script type="text/javascript" src="/libs/iview/iview.min.js"></script>
+  <script type="text/javascript" src="/libs/vue/vue-resource.min.js"></script>
+  <!-- 视频插件js -->
+  <script src="/libs/plyr/plyr.js"></script>
+  <!-- 截图插件js -->
+  <script src="/libs/cropper/cropper.js"></script>
+</head>
+<body>
+  <%- body %>
+</body>
+</html>

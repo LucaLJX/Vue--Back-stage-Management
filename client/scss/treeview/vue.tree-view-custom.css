@@ -1,0 +1,52 @@
+.treeview-custom {
+    height: 100%;
+    /*background-color: #ECEFF1;*/
+    border: 0;
+    padding: 6px 1px;
+    white-space: nowrap;
+
+}
+
+.treeview-custom .icon.node-parent .fill {
+    fill: #657180;
+}
+
+.treeview-custom .icon.node-parent-toggled .front {
+    fill: #546E7A;
+}
+
+.treeview-custom .icon.node-parent-toggled .back {
+    stroke: #546E7A;
+    fill: #FFE151;
+}
+
+.treeview-custom .icon.node circle {
+    stroke: #FF9800;
+    fill: #FFCC80;
+}
+
+.treeview-custom label {
+    font-weight: normal;
+}
+
+.treeview-custom .node {
+    padding: 2px 8px 2px 2px;
+}
+
+.treeview-custom .node.active label {
+    /*font-weight: bold;*/
+}
+
+.treeview-custom .node.active {
+    background-color: #39f;
+    color: #fff;
+    border-radius: 3px;
+    padding: 2px 8px 2px 2px;
+}
+
+.treeview-custom .node:hover {
+    background-color: #39f;
+    color: #FFF;
+    border-radius: 3px;
+    padding: 2px 8px 2px 2px;
+}
