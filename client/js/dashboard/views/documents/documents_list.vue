@@ -64,7 +64,7 @@
           <Upload :action="$nfs.uploadUrl" :data="$nfs.types.documents" :on-success="uploadImgSuccess" :on-progress="disableConfirm" :multiple="false" :default-file-list="imgUploadList" :on-error="handleError" accept="image/gif, image/jpeg, image/png, image/bmp" :format="['jpg','jpeg','png','bmp']">
             <Button type="ghost" icon="ios-cloud-upload-outline">直接上传</Button>
           </Upload>
-          <Button type="ghost" icon="ios-crop" @click="showCropper">裁剪上传</Button>
+          <!-- <Button type="ghost" icon="ios-crop" @click="showCropper">裁剪上传</Button> -->
         </Form-item>
         <Form-item label="文件类型" v-show="isEdit == false">
           <RadioGroup v-model="editObj.type" @on-change="edit_type">
