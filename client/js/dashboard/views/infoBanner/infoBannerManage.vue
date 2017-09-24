@@ -142,6 +142,10 @@
             <Button class="modal-form-btn" type="ghost" size="small" @click="showPreview">预览</Button>
           </p>
         </Form-item>
+        <Form-item label="视频时长：" v-show="detailObj.type == 8">
+          <p class="modal-form-item-p">{{ videoTime }}
+          </p>
+        </Form-item>
         <Form-item label="资源标识：">
           <p>{{ detailObj.path }}
           </p>
@@ -345,6 +349,7 @@
         // detail
         detailModal: false,
         detailObj: {},
+        videoTime: '',
         // 删除
         removeData: {
           ids: null,
@@ -596,9 +601,19 @@
             }
             console.log(data);
             _this.detailObj = data;
+            if (data.type == 8) {
+              let minTime = null, secTime = null;
+              minTime = Math.floor(data.videoDuration / 60);
+              secTime = data.videoDuration - minTime * 60;
+              if (minTime == 0) {
+                _this.videoTime = secTime.toString() + '秒';
+              } else {
+                _this.videoTime = minTime.toString() + '分' + secTime.toString() + '秒';
+              } 
+            }
+            _this.detailModal = true;
           }
         )
-        _this.detailModal = true;
       },
       // 删除--选择
       changeTableNodes (nodes) {
