@@ -5,7 +5,8 @@ if (process.env.NODE_ENV === 'production') {
 
 } else {
   // HOST = 'http://192.168.1.213:1367'
-  HOST = 'http://dev.sf8cloud.com:1367'
+  // HOST = 'http://dev.sf8cloud.com:1367'
+  HOST = 'http://nfs-src.sf8cloud.com/'
 }
 
 var uploadUrl = HOST + '/upload/file'
