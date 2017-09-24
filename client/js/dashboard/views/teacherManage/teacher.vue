@@ -51,7 +51,7 @@
           <Upload :action="$nfs.uploadUrl" :data="$nfs.types.teachers" :on-success="uploadImgSuccess" :on-progress="disableConfirm" :multiple="false" :on-error="handleError" :default-file-list="imgUploadList" accept="image/gif, image/jpeg, image/png, image/bmp" :format="['jpg','jpeg','png','bmp']">
             <Button type="ghost" icon="ios-cloud-upload-outline">上传头像</Button>
           </Upload>
-          <Button type="ghost" icon="ios-crop" @click="showCropper">裁剪上传</Button>
+          <!-- <Button type="ghost" icon="ios-crop" @click="showCropper">裁剪上传</Button> -->
         </Form-item>
         <Form-item label="介绍" prop="introduce_1">
           <Input v-model="editData.editObj.introduce_1" placeholder="请输入讲师介绍" @on-change="edit_introduce_1"></Input>
@@ -98,7 +98,7 @@
     </Modal>
 
     <!-- 图片上传裁剪 -->
-    <Modal v-model="imgUploadData.visible" :mask-closable="false" :title="imgUploadData.title" width="850">
+    <Modal v-model="imgUploadData.visible" :mask-closable="false" :title="imgUploadData.title" width="750">
       <imgCropper :imgType="$nfs.types.teachers.type" :proportionX="10" :proportionY="10" v-if="imgUploadData.visible"></imgCropper>
       <div slot="footer">
       </div>
@@ -333,12 +333,17 @@
         var _this = this;
         _this.imgUploadList = [];
         _this.editData.editCopyObj.avatar = imgToken;
-        _this.$refs['editObj'].resetFields();
-        _this.editData.editObj = Object.assign({}, _this.editData.editCopyObj);
+        _this.cleanWarring();
         _this.imgUploadData.visible = false;
       });  
     },
     methods: {
+      // 清除校验
+      cleanWarring () {
+        let _this = this;
+        _this.$refs['editObj'].resetFields();
+        _this.editData.editObj = Object.assign({}, _this.editData.editCopyObj);
+      },
       // 转换图片路径 token-->url
       fmtImgUrl (token) {
         var _this = this, url = '';
