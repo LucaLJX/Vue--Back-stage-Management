@@ -180,10 +180,11 @@
         if (fromPageNo1) {
           _this.tableData.flipInfo.currentPage = 1;
         }
-        console.log(_this.$parent.$data.selectedNode.code)
+        // console.log(_this.$parent.$data.selectedNode.code)
         ezjsUtil.request(apiConstants.course_subject_allQuestionStem,
           {
-            subjectCode: _this.$parent.$data.selectedNode.code,
+            // subjectCode: _this.$parent.$data.selectedNode.code,
+            subjectCode: _this.$route.query.subjectCode,
             questionType: _this.searchData.questionType,
             stem: _this.searchData.stem,
             difficulty: _this.searchData.difficulty,
