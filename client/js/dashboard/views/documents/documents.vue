@@ -478,7 +478,14 @@
                   return;
                 }
                 _this.$Message.success('删除成功!');
-                _this.treeDataRefresh(_this.selectedNode.parentId);
+                // 如果一级节点被删除，则等同于重新加载组件，选中第一个一级节点
+                if (!_this.selectedNode.parentId) {
+                  _this.$router.push('/company/documents');
+                  _this.selectedNode.id = 0;
+                  _this.treeDataRefresh();
+                } else {
+                  _this.treeDataRefresh(_this.selectedNode.parentId);
+                }
               }
             )
           }
@@ -535,6 +542,30 @@
         };
         this.sortNumData.loading = false;
         this.sortNumData.visible = false;
+      },
+      // 构建文件目录
+      readCodeLabel (code) {
+        if (!code) {
+          return '';
+        }
+        let _this = this;
+        let arr = _this.treeData.formatedData;
+        function codeInNodes(code, nodes) {
+          for (let i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if (code.indexOf(node.code) != -1) {
+              var children = node.children;
+              if (!children) {
+                return node.fullTitle;
+              } else {
+                return codeInNodes(code, children);
+              }
+            }
+          }
+        }
+        
+        var fullTitle = codeInNodes(code, arr);
+        return '' + fullTitle;
       },
     },
   }
