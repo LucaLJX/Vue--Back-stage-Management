@@ -55,7 +55,7 @@
       <p class="float-left cr-right-middle-p" style="">标题搜索：</p>
       <Input class="common-short-size common-left-btn float-left" size="small" v-model="searchData.title" placeholder="标题"></Input>
       <p class="float-left cr-right-middle-p" style="margin-left: 10px;">价格区间(单位:元)：</p>
-      <Input-number class="common-left-btn float-left" size="small" :max="searchData.currentPrice_hi" :min="1" v-model="searchData.currentPrice_lo"></Input-number>
+      <Input-number class="common-left-btn float-left" size="small" :max="searchData.currentPrice_hi" :min="0" v-model="searchData.currentPrice_lo"></Input-number>
       <p class="float-left cr-right-middle-p" style="margin-right: 6px;">~</p>
       <Input-number class="common-left-btn float-left" size="small" :max="10000" :min="searchData.currentPrice_lo" v-model="searchData.currentPrice_hi"></Input-number>
       
@@ -100,7 +100,7 @@
           <Upload :action="$nfs.uploadUrl" :data="$nfs.types.course" :on-success="uploadImgSuccess" :on-progress="disableConfirm" :default-file-list="imgUploadList" :multiple="false" :on-error="handleError"  accept="image/gif, image/jpeg, image/png, image/bmp" :format="['jpg','jpeg','png','bmp']">
             <Button type="ghost" icon="ios-cloud-upload-outline">直接上传</Button>
           </Upload>
-          <Button type="ghost" icon="ios-crop" @click="showCropper">裁剪上传</Button>
+          <!-- <Button type="ghost" icon="ios-crop" @click="showCropper">裁剪上传</Button> -->
         </Form-item>
         <Form-item label="课时" prop="classHour">
           <Input-number :max="10000" :min="1" v-model="editData.classHour" @on-change="edit_classHour"></Input-number>
@@ -147,7 +147,8 @@
           <p>{{ detailData.detailObj.title }}</p>
         </Form-item>
         <Form-item label="描述：">
-          <p>{{ detailData.detailObj.description }}</p>
+          <p v-show="!detailData.detailObj.description">无</p>
+          <p v-show="detailData.detailObj.description">{{ detailData.detailObj.description }}</p>
         </Form-item>
         <Form-item label="创建时间：">
           <p>{{ fmtFullTime(detailData.detailObj.createTime) }}</p>
@@ -188,6 +189,15 @@
     <Modal v-model="imgUploadData.visible" :mask-closable="false" :title="imgUploadData.title" width="750">
       <imgCropper :imgType="$nfs.types.course.type" :proportionX="18" :proportionY="21" v-if="imgUploadData.visible"></imgCropper>
       <div slot="footer">
+      </div>
+    </Modal>
+
+    <!-- 修改课程的节点 -->
+    <Modal v-model="coModuleData.visible" :mask-closable="false" :closable="false" :title="coModuleData.title">
+      <Tree :data="coModuleData.data" show-checkbox @on-check-change="changeCheckModul"></Tree>
+      <div slot="footer">
+        <Button type="ghost" @click="changeModule_cancel">取消</Button>
+        <Button type="primary" @click="changeModule_ok">确定</Button>
       </div>
     </Modal>
 
@@ -242,7 +252,7 @@
           coModuleType: null, //模块type
           coModuleCode: null, //模块code
           title: '',
-          currentPrice_lo: 1, //现价--最小值
+          currentPrice_lo: 0, //现价--最小值
           currentPrice_hi: 10000, // 现价--最大值
           pageNo: 1,
         },
@@ -295,10 +305,20 @@
             {
               title: '讲师',
               width: 100,
+              align: 'center',
               key: 'teacherName',
             },
             {
-              title: '原价',
+              title: '所在结构',
+              align: 'center',
+              key: 'coModuleCode',
+              render: (h, params) => {
+                let fullTitle = this.treeLabelFilter(params.row.coModuleCode);
+                return h('div', fullTitle);
+              }
+            },
+            {
+              title: '原价(元)',
               key: 'originalPrice',
               width: 80,
               align: 'center',
@@ -308,7 +328,7 @@
               }
             },
             {
-              title: '现价',
+              title: '现价(元)',
               key: 'currentPrice',
               width: 80,
               align: 'center',
@@ -322,6 +342,27 @@
               key: 'sortNum',
               width: 80,
               align: 'center'
+            },
+            {
+              title: '操作',
+              key: 'action',
+              width: 100,
+              align: 'center',
+              render: (h, params) => {
+                return h('div', [
+                  h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small',
+                    },
+                    on: {
+                      click: () => {
+                        this.showChangeCatalog(params.index);
+                      }
+                    }
+                  }, '修改目录'),
+                ]);
+              },
             },
             {
               title: '操作',
@@ -434,7 +475,7 @@
             { type: 'string', max: 15, message: '名称长度不能超过15个字符', trigger: 'blur' }
           ],
           description: [
-            { required: true, message: '请填写描述', trigger: 'blur' },
+            // { required: true, message: '请填写描述', trigger: 'blur' },
             { type: 'string', max: 200, message: '描述长度不能超过200个字符', trigger: 'blur' }
           ],
           coverImg: [
@@ -589,6 +630,28 @@
           title: '上传图片',
           imgToken: '',
         },
+        // 修改课程所在的节点
+        coModuleData: {
+          coModuleType: null,
+          title: '修改课程所属目录',
+          visible: false,
+          data: [],
+          checkedModuleCode: null,
+          checkedModuleTitle: '',
+          checkedLength: 0,
+          editData: {
+            id: null,
+            title: '',
+            sortNum: null,
+            description: '',
+            coverImg: '',
+            originalPrice: null,
+            currentPrice: null,
+            aceTeacherId: null,
+            coModuleCode: null,
+            coModuleType: null,
+          }
+        },
       }
     },
     watch: {
@@ -601,12 +664,17 @@
         var _this = this;
         console.log(imgToken);  
         _this.editCopyData.coverImg = imgToken;
-        _this.$refs['editData'].resetFields();
-        _this.editData = Object.assign({}, _this.editCopyData);
+        _this.cleanWarring();
         _this.imgUploadData.visible = false;
       });  
     },
     methods: {
+      // 其他地方传参，清理校验提醒
+      cleanWarring () {
+        let _this = this;
+        _this.$refs['editData'].resetFields();
+        _this.editData = Object.assign({}, _this.editCopyData);
+      },
       // 转换图片路径 token-->url
       fmtImgUrl (token) {
         var _this = this, url = '';
@@ -656,7 +724,7 @@
           coModuleType: _this.$route.params.type, //模块type
           coModuleCode: _this.$route.query.subjectCode, //模块code
           title: '',
-          currentPrice_lo: 1, //现价--最小值
+          currentPrice_lo: 0, //现价--最小值
           currentPrice_hi: 10000, // 现价--最大值
           pageNo: 1,
         }
@@ -940,9 +1008,10 @@
       // sortNum--show
       editSortNum (index) {
         var _this = this;
+        console.log(_this.tableData.data[index]);
         _this.sortNumData.editObj.id = _this.tableData.data[index].id;
         _this.sortNumData.editObj.title = _this.tableData.data[index].title;
-        _this.sortNumData.editObj.description = _this.tableData.data[index].description;
+        _this.sortNumData.editObj.description = _this.tableData.data[index].courseDescription;
         _this.sortNumData.editObj.coverImg = _this.tableData.data[index].coverImg;
         _this.sortNumData.editObj.originalPrice = _this.tableData.data[index].originalPrice;
         _this.sortNumData.editObj.currentPrice = _this.tableData.data[index].currentPrice;
@@ -1039,7 +1108,209 @@
         let _this = this;
         _this.imgUploadData.visible = true;
       },
+      // 渲染路径
+      treeLabelFilter (code) {
+        var _this = this;
+        return '' + _this.$parent.readCodeLabel(code);
+      },
+      // 修改课程所在的目录
+      // 1.获取树的数据、课程数据
+      showChangeCatalog (index) {
+        let _this = this, _index = index;
+        console.log(_this.tableData.data[_index]);
+        // 获取要修改的课程的数据，并构建提交的数据
+        _this.coModuleData.editData.id = _this.tableData.data[_index].id;
+        _this.coModuleData.editData.title = _this.tableData.data[_index].title;
+        _this.coModuleData.editData.sortNum = _this.tableData.data[_index].sortNum;
+        _this.coModuleData.editData.description = _this.tableData.data[_index].courseDescription;
+        _this.coModuleData.editData.coverImg = _this.tableData.data[_index].coverImg;
+        _this.coModuleData.editData.originalPrice = _this.tableData.data[_index].originalPrice;
+        _this.coModuleData.editData.currentPrice = _this.tableData.data[_index].currentPrice;
+        _this.coModuleData.editData.aceTeacherId = _this.tableData.data[_index].aceTeacherId;
+        _this.coModuleData.editData.coModuleCode = _this.tableData.data[_index].coModuleCode;
+        _this.coModuleData.editData.coModuleType = _this.tableData.data[_index].coModuleType;
+        // 获取当前页面的coModuleType
+        _this.coModuleData.coModuleType = _this.tableData.data[_index].coModuleType;
+        // 获取已勾选的解构code值
+        _this.coModuleData.checkedModuleCode = _this.tableData.data[_index].coModuleCode;
+        _this.coModuleData.checkedLength = 1;
+        // 获取当前所有的结构树
+        ezjsUtil.request(apiConstants.documentInModule_getCoModuleByType,
+        {
+          dataType: 'tree',
+          type: _this.coModuleData.coModuleType
+        },
+        function (err, data) {
+          if (err) {
+            return;
+          }
+          let oldTreeData = data;
 
+          //重构treeData
+          function formatTreeData(arr, depth) {
+            var newTree = [];
+            
+            // 判断是否是最后一级
+            function isLevel3 (code, title) {
+              let length = code.split('#').length - 1;
+              return length != 3;
+            }
+
+            for (var i = 0; i < arr.length; i++) {
+              var node = arr[i];
+              if (!node.children) {
+                // 无子节点
+                if (node.code.split('#').length == 4) {
+                  if (node.code == _this.coModuleData.checkedModuleCode) {
+                    // 选中
+                    newTree.push({
+                      code: node.code,
+                      id: node.id,
+                      title: node.title,
+                      fullTitle: node.fullTitle,
+                      expand: depth == 0 || depth == 1,
+                      checked: true,
+                      disabled: isLevel3(node.code, node.title),
+                      children: null,
+                      depth: depth,
+                    });
+                  } else {
+                    // 未选中
+                    newTree.push({
+                      code: node.code,
+                      id: node.id,
+                      title: node.title,
+                      fullTitle: node.fullTitle,
+                      expand: depth == 0 || depth == 1,
+                      checked: false,
+                      disabled: isLevel3(node.code, node.title),
+                      children: null,
+                      depth: depth,
+                    });
+                  }
+                } else {
+                  newTree.push({
+                    code: node.code,
+                    id: node.id,
+                    title: node.title,
+                    fullTitle: node.fullTitle,
+                    expand: depth == 0 || depth == 1,
+                    disabled: isLevel3(node.code, node.title),
+                    children: null,
+                    depth: depth,
+                  });
+                }
+              } else {
+                // 有子节点
+                newTree.push({
+                    code: node.code,
+                    id: node.id,
+                    title: node.title,
+                    fullTitle: node.fullTitle,
+                    expand: depth == 0 || depth == 1,
+                    disabled: isLevel3(node.code),
+                    children: formatTreeData(node.children, depth + 1),
+                    depth: depth,
+                  });
+              }
+            }
+            return newTree;
+          } 
+          
+           _this.coModuleData.data = formatTreeData(oldTreeData, 0);
+           _this.coModuleData.visible = true;
+        });
+      },
+      // 2.勾选
+      changeCheckModul (nodes) {
+        let _this = this, checkedArr = [], titleArr = [];
+        for (let i = 0; i < nodes.length; i++) {
+          let node = nodes[i];
+          if (node.code.split('#').length == 4) {
+            checkedArr.push(node.code);
+            titleArr.push(node.fullTitle);
+          }
+        }
+        _this.coModuleData.checkedLength = checkedArr.length;
+        _this.coModuleData.checkedModuleCode = checkedArr.join(',');
+        _this.coModuleData.checkedModuleTitle = titleArr.join(',');
+      },
+      // 3.确认
+      changeModule_ok () {
+        let _this = this;
+        if (_this.coModuleData.checkedLength == 0) {
+          _this.$Modal.warning({
+            title: '操作失败',
+            content: '请勾选目录！'
+          });
+        } else if (_this.coModuleData.checkedLength > 1) {
+          _this.$Modal.warning({
+            title: '操作失败',
+            content: '只能勾选一个目录！'
+          });
+        } else if (_this.coModuleData.checkedLength == 1) {
+          _this.$Modal.confirm({
+            title: '确认修改',
+            content: '<p>是否确认修改课程到目录' + _this.coModuleData.checkedModuleTitle + '下？</p>',
+            onOk: () => {
+              _this.coModuleData.editData.coModuleCode = _this.coModuleData.checkedModuleCode;
+
+              ezjsUtil.request(apiConstants.ace_course_createOrUpdate, _this.coModuleData.editData,
+              function (err, data) {
+                if (err) {
+                  return;
+                }
+                _this.$Message.success("修改成功！");
+                _this.tableDataRefresh();
+                _this.coModuleData.visible = false;
+                _this.coModuleData.editObj = {
+                  id: null, //课程id
+                  title: '', //课程title
+                  description: '', 
+                  coverImg: '', // 封面图片
+                  originalPrice: 0, //原价
+                  currentPrice: 0, // 现价
+                  aceTeacherId: null, //讲师id
+                  coModuleCode: null, //模块节点code
+                  coModuleType: null, //模块type
+                };
+                _this.coModuleData.data = [];
+                _this.coModuleData.checkedLength = 0;
+                _this.coModuleData.checkedModuleCode = null,
+                _this.coModuleData.checkedModuleTitle = '';
+                _this.coModuleData.coModuleType = null;
+              }
+            )
+
+            },
+            onCancel: () => {
+              _this.$Message.info('取消操作！');
+            },
+          });
+        }
+      },
+      // 4.取消操作
+      changeModule_cancel () {
+        let _this = this;
+        _this.$Message.info('取消修改！');
+        _this.coModuleData.visible = false;
+        _this.coModuleData.editObj = {
+          id: null, //课程id
+          title: '', //课程title
+          description: '', 
+          coverImg: '', // 封面图片
+          originalPrice: 0, //原价
+          currentPrice: 0, // 现价
+          aceTeacherId: null, //讲师id
+          coModuleCode: null, //模块节点code
+          coModuleType: null, //模块type
+        };
+        _this.coModuleData.data = [];
+        _this.coModuleData.checkedLength = 0;
+        _this.coModuleData.checkedModuleCode = null,
+        _this.coModuleData.checkedModuleTitle = '';
+        _this.coModuleData.coModuleType = null;
+      },
     }
   }
 </script>
