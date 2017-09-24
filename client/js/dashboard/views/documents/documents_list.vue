@@ -176,7 +176,8 @@
           <p>{{ detailObj.title }}</p>
         </Form-item>
         <Form-item label="描述：">
-          <p>{{ detailObj.description }}</p>
+          <p v-show="detailObj.description">{{ detailObj.description }}</p>
+          <p v-show="!detailObj.description">无</p>
         </Form-item>
         <Form-item label="创建时间">
           <p>{{  fmtFullTime(detailObj.createTime) }}</p>
@@ -194,7 +195,7 @@
           </p>
         </Form-item>
         <Form-item label="缩略图：">
-          <img class="modal-form-img" :src="fmtImgUrl(detailObj.thumbnail)">
+          <img class="modal-form-img" :src="fmtDetailImgUrl(detailObj.thumbnail)">
         </Form-item>
       </Form>
     </Modal>
@@ -214,7 +215,7 @@
 
     <!-- 图片上传裁剪 -->
     <Modal v-model="imgUploadData.visible" :mask-closable="false" :title="imgUploadData.title" width="850">
-      <imgCropper :imgType="$nfs.types.documents.type" :proportionX="16" :proportionY="9" v-if="imgUploadData.visible"></imgCropper>
+      <imgCropper :imgType="$nfs.types.documents.type" :proportionX="16" :proportionY="9" :isMultipurpose="true" v-if="imgUploadData.visible"></imgCropper>
       <div slot="footer">
       </div>
     </Modal>
@@ -310,6 +311,15 @@
                     margin: '6px auto'
                   },
                 });
+              }
+            },
+            {
+              title: '所在结构',
+              align: 'center',
+              key: 'docTreeCode',
+              render: (h, params) => {
+                let fullTitle = this.treeLabelFilter(params.row.docTreeCode);
+                return h('div', fullTitle);
               }
             },
             {
@@ -467,7 +477,7 @@
             { type: 'string', max: 30, message: '名称长度不能超过30', trigger: 'blur' }
           ],
           description: [
-            { required: true, message: '请填写描述', trigger: 'blur' },
+            // { required: true, message: '请填写描述', trigger: 'blur' },
             { type: 'string', max: 100, message: '描述长度不能超过100', trigger: 'blur' }
           ],
         },
@@ -549,6 +559,19 @@
           if (_this.editObj.type == 1) {
             url = '/images/thumbnail/thumbnail-pdf.jpg';
           } else if (_this.editObj.type == 8) {
+            url = '/images/thumbnail/thumbnail-video.jpg';
+          }
+        }
+        return url;
+      },
+      fmtDetailImgUrl (token) {
+        var _this = this, url = '';
+        if (token != null && token != '') {
+          url = ezjsUtil.nfsUtil.getFileUrl(token);
+        } else {
+          if (_this.detailObj.type == 1) {
+            url = '/images/thumbnail/thumbnail-pdf.jpg';
+          } else if (_this.detailObj.type == 8) {
             url = '/images/thumbnail/thumbnail-video.jpg';
           }
         }
@@ -725,7 +748,7 @@
         var _this = this;
         if (_this.tabValue != _this.tabBefore) {
           _this.editObj.path = '';
-          _this.editObj.videoDuration = null;
+          _this.editObj.videoDuration = 0;
           _this.editObj.content = '';
           _this.copyEditObj = Object.assign({}, _this.editObj);
           _this.uploadList = [];
@@ -874,17 +897,14 @@
             }
             _this.detailObj = data;
             if (data.type == 8) {
-              let hourTime = null, minTime = null, secTime = null;
-              hourTime = Math.floor(data.videoDuration / 360);
-              minTime = Math.floor((data.videoDuration - hourTime * 360) / 60);
-              secTime = data.videoDuration - hourTime * 360 - minTime * 60;
-              if (hourTime == 0 && minTime == 0) {
+              let minTime = null, secTime = null;
+              minTime = Math.floor(data.videoDuration / 60);
+              secTime = data.videoDuration - minTime * 60;
+              if (minTime == 0) {
                 _this.videoTime = secTime.toString() + '秒';
-              } else if (hourTime == 0 && minTime != 0) {
+              } else {
                 _this.videoTime = minTime.toString() + '分' + secTime.toString() + '秒';
-              } else if (hourTime != 0 && minTime != 0) {
-                _this.videoTime = hourTime.toString() + '小时' + minTime.toString() + '分' + secTime.toString() + '秒';
-              }
+              } 
             }
             _this.detailModal = true;
           }
@@ -1109,6 +1129,11 @@
       showCropper () {
         let _this = this;
         _this.imgUploadData.visible = true;
+      },
+      // 渲染路径
+      treeLabelFilter (code) {
+        var _this = this;
+        return '' + _this.$parent.readCodeLabel(code);
       },
     },
   }
