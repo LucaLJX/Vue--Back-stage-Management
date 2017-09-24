@@ -1,2 +1,2 @@
-import Vue from 'vue';  
+import Vue from '../../../../assets/libs/vue/vue';  
 export default new Vue();
