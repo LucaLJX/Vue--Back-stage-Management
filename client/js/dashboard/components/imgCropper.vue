@@ -4,18 +4,40 @@
       <div class="myCropper-words" v-show="!imgCropperData.imgSrc">请点击按钮选择图片进行裁剪</div>
     </div>
     <div class="myCropper-preview" :class="isShort ? 'myCropper-preview-short' : 'myCropper-preview-long'">
-      <div class="myCropper-preview-1 avatar-preview">
-        <img :src="!imgCropperData.imgUploadSrc ? '/images/thumbnail/thumbnail-img.jpg' : imgCropperData.imgUploadSrc" alt="">
+      <div class="preview-container">
+        <div class="myCropper-preview-1 avatar-preview">
+          <img :src="!imgCropperData.imgUploadSrc ? '/images/thumbnail/thumbnail-img.jpg' : imgCropperData.imgUploadSrc" alt="">
+        </div>
+        <div class="myCropper-preview-2 avatar-preview">
+          <img :src="!imgCropperData.imgUploadSrc ? '/images/thumbnail/thumbnail-img.jpg' : imgCropperData.imgUploadSrc" alt="">
+        </div>
       </div>
-      <div class="myCropper-preview-2 avatar-preview">
-        <img :src="!imgCropperData.imgUploadSrc ? '/images/thumbnail/thumbnail-img.jpg' : imgCropperData.imgUploadSrc" alt="">
+      <div class="btn-container">
+        <input id="myCropper-input" type="file" :accept="imgCropperData.accept" ref="inputer" @change="handleFile">
+        <div style="height: 19px;">
+          <Row v-if="isMultipurpose">
+            <Col span="5">
+              图片用途：
+            </Col>
+            <Col span="16" offset="1">
+
+              <RadioGroup v-model="purposeType">
+                <Radio label="2">
+                    <span>视频封面</span>
+                </Radio>
+                <Radio label="1">
+                    <span>首页焦点图封面</span>
+                </Radio>
+            </RadioGroup>
+
+            </Col>
+          </Row>
+        </div>
+        <div>
+          <Button type="ghost" class="myCropper-btn" @click="btnClick">选择图片</Button>
+          <Button type="primary" class="myCropper-btn" :loading="cropperLoading" @click="crop_ok">确认</Button>
+        </div>
       </div>
-      <div class="myCropper-preview-3 avatar-preview">
-        <img :src="!imgCropperData.imgUploadSrc ? '/images/thumbnail/thumbnail-img.jpg' : imgCropperData.imgUploadSrc" alt="">
-      </div>
-      <input id="myCropper-input" type="file" :accept="imgCropperData.accept" ref="inputer" @change="handleFile">
-      <Button type="ghost" class="myCropper-btn" @click="btnClick">选择图片</Button>
-      <Button type="primary" class="myCropper-btn" :loading="cropperLoading" @click="crop_ok">确认</Button>
     </div>
     
     
@@ -37,6 +59,9 @@
       },
       proportionY: {
         type: Number
+      },
+      isMultipurpose: {
+        type: Boolean
       }
     },
     data () {
@@ -52,7 +77,11 @@
         hasSelectImg: false,
         cropperLoading: false,
         isShort: false,
+        purposeType: 2,
       }
+    },
+    watch: {
+      'purposeType': 'changePurpose'
     },
     created: function () {
       let _this = this;
@@ -123,13 +152,33 @@
         _this.imgObj = $('<img src="' + _this.imgCropperData.imgSrc + '">');
         let $avatarPreview = $('.avatar-preview');
         $('#myCropper-workspace').empty().html(_this.imgObj);
-        _this.imgObj.cropper({
-          aspectRatio: _this.proportionX / _this.proportionY,
-          preview: $avatarPreview,
-          crop: function(e) {
-            
+        if (_this.isMultipurpose == true) {
+          if (_this.purposeType == '1') {
+            _this.imgObj.cropper({
+              aspectRatio: 75 / 33,
+              preview: $avatarPreview,
+              crop: function(e) {
+                
+              }
+            });
+          } else if (_this.purposeType == '2') {
+              _this.imgObj.cropper({
+              aspectRatio: 16 / 9,
+              preview: $avatarPreview,
+              crop: function(e) {
+                
+              }
+            });
           }
-        });
+        } else {
+          _this.imgObj.cropper({
+            aspectRatio: _this.proportionX / _this.proportionY,
+            preview: $avatarPreview,
+            crop: function(e) {
+              
+            }
+          });
+        }
         _this.hasSelectImg = true;
       },
       // 确认
@@ -201,6 +250,72 @@
 					}
 				});
       },
+      // 监测多用途选择
+      changePurpose () {
+        let _this = this;
+        console.log(typeof(_this.purposeType));
+        if (_this.purposeType == '1') {
+          // 75:33
+          if (_this.imgObj) {
+            $('#myCropper-workspace').empty().html(_this.imgObj);
+            _this.imgObj.cropper({
+              aspectRatio: 75 / 33,
+              preview: $('.avatar-preview'),
+              crop: function(e) {
+                
+              }
+            });
+          }
+          // 初始化预览区域
+          let maxWidthNum = Math.floor(300 / 75);
+          let previewWidth = maxWidthNum * 75;
+          let previewHeight = maxWidthNum * 33;
+          if (previewWidth / previewHeight <= 1.7) {
+            previewWidth = previewWidth / 2;
+            previewHeight = previewHeight / 2;
+            _this.isShort = true;
+          }
+          // 设置最大预览容器的宽高
+          $('.myCropper-preview-1').css('width', previewWidth + 'px');
+          $('.myCropper-preview-1').css('height', previewHeight + 'px');
+          // 设置中等预览容器的宽高
+          $('.myCropper-container .myCropper-preview .myCropper-preview-2').css('width',( previewWidth / 2) + 'px');
+          $('.myCropper-container .myCropper-preview .myCropper-preview-2').css('height', (previewHeight / 2) + 'px');
+          // 设置最小预览容器的宽高
+          $('.myCropper-container .myCropper-preview .myCropper-preview-3').css('width',( previewWidth / 4) + 'px');
+          $('.myCropper-container .myCropper-preview .myCropper-preview-3').css('height', (previewHeight / 4) + 'px');
+        } else if (_this.purposeType == '2') {
+          // 16:9
+          if (_this.imgObj) {
+            $('#myCropper-workspace').empty().html(_this.imgObj);
+            _this.imgObj.cropper({
+              aspectRatio: 16 / 9,
+              preview: $('.avatar-preview'),
+              crop: function(e) {
+                
+              }
+            });
+          }
+          // 初始化预览区域
+          let maxWidthNum = Math.floor(300 / 16);
+          let previewWidth = maxWidthNum * 16;
+          let previewHeight = maxWidthNum * 9;
+          if (previewWidth / previewHeight <= 1.7) {
+            previewWidth = previewWidth / 2;
+            previewHeight = previewHeight / 2;
+            _this.isShort = true;
+          }
+          // 设置最大预览容器的宽高
+          $('.myCropper-preview-1').css('width', previewWidth + 'px');
+          $('.myCropper-preview-1').css('height', previewHeight + 'px');
+          // 设置中等预览容器的宽高
+          $('.myCropper-container .myCropper-preview .myCropper-preview-2').css('width',( previewWidth / 2) + 'px');
+          $('.myCropper-container .myCropper-preview .myCropper-preview-2').css('height', (previewHeight / 2) + 'px');
+          // 设置最小预览容器的宽高
+          $('.myCropper-container .myCropper-preview .myCropper-preview-3').css('width',( previewWidth / 4) + 'px');
+          $('.myCropper-container .myCropper-preview .myCropper-preview-3').css('height', (previewHeight / 4) + 'px');
+        }
+      },
 
     }
   }
@@ -238,7 +353,7 @@
     height: 400px;
     margin-left: 10px;
   }
-  .myCropper-container .myCropper-preview .myCropper-preview-1 {
+  .myCropper-container .myCropper-preview .preview-container .myCropper-preview-1 {
     border-radius: 5px;
     overflow: hidden;
     border: 1px solid #dddee1;
@@ -248,7 +363,7 @@
       height: 100%;
     }
   }
-  .myCropper-container .myCropper-preview .myCropper-preview-2 {
+  .myCropper-container .myCropper-preview .preview-container .myCropper-preview-2 {
     margin-top: 20px;
     border-radius: 5px;
     overflow: hidden;
@@ -259,21 +374,17 @@
       height: 100%;
     }
   }
-  .myCropper-container .myCropper-preview .myCropper-preview-3 {
-    margin-top: 20px;
-    border-radius: 5px;
-    overflow: hidden;
-    border: 1px solid #dddee1;
-    box-shadow: 3px 3px 3px #dddee1;
-    img {
-      width: 100%;
-      height: 100%;
-    }
+  
+  .myCropper-container .myCropper-preview .preview-container {
+    height: 300px;
+  }
+
+  .btn-container {
+    height: 100px;
   }
   // 按钮
   .myCropper-btn {
-    float: left;
-    margin-top: 20px;
+    margin-top: 30px;
     margin-right: 10px;
   }
 </style>
