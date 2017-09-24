@@ -102,10 +102,46 @@
             </Upload>
             </Tab-pane>
             <Tab-pane label="视频链接" name="tabLink">
-              <Input v-model="editObj.path" placeholder="请输入视频链接..." @on-change="edit_path"></Input>
+              <Row>
+                <Col span="4">
+                  视频链接
+                </Col>
+                <Col span="20">
+                  <Input v-model="editObj.path" placeholder="请输入视频链接..." @on-change="edit_path"></Input>
+                </Col>
+              </Row>
+              <Row style="margin-top: 10px;">
+                <Col span="4">
+                  视频时长
+                </Col>
+                <Col span="5">
+                  <InputNumber :max="7200" :min="0" v-model="editObj.videoDuration" @on-change="edit_videoDuration"></InputNumber>
+                </Col>
+                <Col span="5">
+                  秒
+                </Col>
+              </Row>
             </Tab-pane>
             <Tab-pane label="资源标识" name="tabToken">
-              <Input v-model="editObj.path" placeholder="请输入已有视频资源标识..." @on-change="edit_path"></Input>
+              <Row>
+                <Col span="4">
+                  资源标识
+                </Col>
+                <Col span="20">
+                  <Input v-model="editObj.path" placeholder="请输入已有视频资源标识..." @on-change="edit_path"></Input>
+                </Col>
+              </Row>
+              <Row style="margin-top: 10px;">
+                <Col span="4">
+                  视频时长
+                </Col>
+                <Col span="5">
+                  <InputNumber :max="7200" :min="0" v-model="editObj.videoDuration" @on-change="edit_videoDuration"></InputNumber>
+                </Col>
+                <Col span="5">
+                  秒
+                </Col>
+              </Row>
             </Tab-pane>
           </Tabs>
         </Form-item>
@@ -203,8 +239,17 @@
         if (this.editObj.path == '' && this.editObj.content == '') {
           callback(new Error('请指定文件内容'));
         } else {
-          this.editObj.path = this.editObj.path.split(' ').join('');
-          callback();
+          if (this.editObj.type == 8) {
+            if (this.editObj.videoDuration == 0) {
+              callback(new Error('请指定视频文件时长'));
+            } else {
+              this.editObj.path = this.editObj.path.split(' ').join('');
+              callback();
+            }
+          } else if (this.editObj.type == 1) {
+            this.editObj.path = this.editObj.path.split(' ').join('');
+            callback();
+          }
         }
       };
       return {
@@ -398,7 +443,7 @@
           thumbnail: '',
           sortNum: 0,
           doc_tree_id: '',
-          videoDuration: null, // 视频时长--单位秒
+          videoDuration: 0, // 视频时长--单位秒
         },
         copyEditObj: {
           id: null,
@@ -410,7 +455,7 @@
           thumbnail: '',
           sortNum: 0,
           doc_tree_id: '',
-          videoDuration: null, // 视频时长--单位秒
+          videoDuration: 0, // 视频时长--单位秒
         },
         uploadList: [],
         formRules: {
@@ -655,12 +700,17 @@
       edit_type (type) {
         this.copyEditObj.type = this.editObj.type;
         this.editObj.path = '';
-        this.editObj.videoDuration = null;
+        this.editObj.videoDuration = 0;
         this.editObj.content = '';
         this.copyEditObj = Object.assign({}, this.editObj);
         this.uploadList = [];
         this.tabValue = 'tabUpload';
         this.tabBefore = 'tabUpload';
+      },
+      edit_videoDuration () {
+        this.copyEditObj = Object.assign({}, this.editObj);
+        this.$refs['editObj'].resetFields();
+        this.editObj = Object.assign({}, this.copyEditObj);
       },
       // 上传图片成功
       uploadImgSuccess (res, file) {
@@ -753,7 +803,7 @@
                                   thumbnail: '',
                                   sortNum: 0,
                                   doc_tree_id: '',
-                                  videoDuration: null, // 视频时长--单位秒
+                                  videoDuration: 0, // 视频时长--单位秒
                                 };
                 _this.copyEditObj = {
                                   id: null,
@@ -765,7 +815,7 @@
                                   thumbnail: '',
                                   sortNum: 0,
                                   doc_tree_id: '',
-                                  videoDuration: null, // 视频时长--单位秒
+                                  videoDuration: 0, // 视频时长--单位秒
                                 };
                 _this.uploadList = [];
               }
@@ -793,7 +843,7 @@
                           thumbnail: '',
                           sortNum: 0,
                           doc_tree_id: '',
-                          videoDuration: null, // 视频时长--单位秒
+                          videoDuration: 0, // 视频时长--单位秒
                         };
         _this.copyEditObj = {
                           id: null,
@@ -805,7 +855,7 @@
                           thumbnail: '',
                           sortNum: 0,
                           doc_tree_id: '',
-                          videoDuration: null, // 视频时长--单位秒
+                          videoDuration: 0, // 视频时长--单位秒
                         };
         _this.uploadList = [];
         _this.tabValue = 'tabUpload';
