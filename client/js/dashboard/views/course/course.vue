@@ -261,19 +261,20 @@
       tableDataRefresh(){
         var _this = this;
         //        ezjsUtil.eventHub.$emit('course-tree-click')
-        _this.$router.push('/company/course/' + _this.selectedNode.id + '?r=' + Math.random());
+        _this.$router.push({path:'/company/course/' + _this.selectedNode.id + '?r=' + Math.random(), query: {subjectCode: _this.selectedNode.code}});
       },
       treeCode2Label(code){
         if (!code) {
           return '';
         }
+        var nCode = code + "#"
         var _this = this;
         var arr = _this.treeData.srcData;
 
         function codeInNodes(code, nodes) {
           for (var i = 0; i < nodes.length; i++) {
             var node = nodes[i];
-            if (code.indexOf(node.code) != -1) {
+            if (code.indexOf(node.code + "#") != -1) {
               var children = node.nodes;
               if (children.length == 0) {
                 return node.fullLabel;
@@ -284,7 +285,7 @@
           }
         }
 
-        var fullLabel = codeInNodes(code, arr);
+        var fullLabel = codeInNodes(nCode, arr);
         return '' + fullLabel
       },
       //判断是否可以创建题目或者课程节点

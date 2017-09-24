@@ -41,7 +41,7 @@
         <router-view></router-view>
 
       </div>
-    </div>   
+    </div>
     <!-- modal  -->
     <Modal
       :title="modelFormData.title"
@@ -186,7 +186,7 @@
     },
     created: function () {
       var _this = this;
-      
+
       _this.treeDataRefresh(); //组件加载完成--自动获取tree
     },
     mounted: function () {
@@ -223,8 +223,8 @@
               return;
             }
             _this.treeData.srcData = data;
-            
-            //重构treeData，默认选中第一级节点 
+
+            //重构treeData，默认选中第一级节点
             function formatTreeData(arr, depth) {
               var newTree = [];
               for (var i = 0; i < arr.length; i++) {
@@ -239,7 +239,7 @@
                       //如果是第一树节点，则展开
                       // 这里不需要写成expand: depth == 0
                       // 因为后面，会调用方法自动展开选中节点（第一个根节点或者其他）
-                      expand: false, 
+                      expand: false,
                       selected: depth == 0, //默认选中根节点
                       id: node.id,
                       depth: depth,
@@ -254,12 +254,13 @@
                       //如果是第一树节点，则展开
                       // 这里不需要写成expand: depth == 0
                       // 因为后面，会调用方法自动展开选中节点（第一个根节点或者其他）
-                      expand: false, 
+                      expand: false,
                       id: node.id,
                       selected: depth == 0, //默认选中根节点
                       depth: depth,
                       code: node.code,
-                      sortNum: node.sortNum
+                      sortNum: node.sortNum,
+                      children: null,
                     })
                   }
                 } else {
@@ -290,13 +291,14 @@
                       id: node.id,
                       depth: depth,
                       code: node.code,
-                      sortNum: node.sortNum
+                      sortNum: node.sortNum,
+                      children: null,
                     })
                   }
                 }
               }
               return newTree;
-            } 
+            }
 
             _this.treeData.formatedData = formatTreeData(_this.treeData.srcData, 0);
 
@@ -312,7 +314,7 @@
               } else if (_this.selectedNode.id != 0) {
                 // 如果没有传参、路由subjectid也没值，则defaultSelectedNodeId为选中的节点的id（选中id不为0）
                 defaultSelectedNodeId = _this.selectedNode.id;
-              } 
+              }
             }
 
             _this.$nextTick(() => {
@@ -363,7 +365,7 @@
           return '';
         }
         var arr = _this.treeData.formatedData;
-        
+
         function codeInNodes (code, nodes) {
           for (var i = 0; i < nodes.length; i++) {
             var node = nodes[i];
@@ -451,7 +453,7 @@
         this.$refs[name].validate(function (valid) {
           if (valid) {
             _this.modelFormData.loading = true;
-            
+
             ezjsUtil.request(apiConstants.documentInModule_edit, _this.modelFormData.editObj,
               function (err, data) {
                 if (err) {
@@ -562,6 +564,34 @@
         };
         this.sortNumData.loading = false;
         this.sortNumData.visible = false;
+      },
+      // 构建课程目录
+      readCodeLabel (code) {
+        if (!code) {
+          return '';
+        }
+        var nCode = '#' + code;
+        let _this = this;
+        let arr = _this.treeData.formatedData;
+        function codeInNodes(code, nodes) {
+          for (let i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            if(code == ('#' + node.code)) {
+              return node.fullTitle
+            }
+            if (code.indexOf("#" + node.code) != -1) {
+              var children = node.children;
+              if (!children) {
+                return node.fullTitle;
+              } else {
+                return codeInNodes(code, children);
+              }
+            }
+          }
+        }
+
+        var fullTitle = codeInNodes(nCode, arr);
+        return '' + fullTitle;
       },
     },
   }
