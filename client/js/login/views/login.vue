@@ -33,8 +33,8 @@
       return {
         context: 'login context',
         loginUser: {
-          username: 'ace_admin',
-          password: 'Secret_1234',
+          username: '',
+          password: '',
           companyName: null,
           companyId: 1
         },
